@@ -1,15 +1,14 @@
-﻿=== Ultimate Member ===
+=== Ultimate Member - User Profile & Membership Plugin ===
 Author URI: https://ultimatemember.com/
 Plugin URI: https://ultimatemember.com/
 Contributors: ultimatemember, champsupertramp
 Donate link: 
-Tags: access control, author, authors, author profile, comments, community, communities, conditional fields, conditional logic, conditional menus, content protection, custom fields, file uploads, form builder, front-end login, front-end registration, gravatar, hide wp-admin, login, login page, logged-in users, mandrill, member, members, membership, member directory, online users, profile, profiles, profile builder, registration, restriction, restrict content, role creation, role menus, search filters, sign in, sign up, social network, star ratings, toolbar, user, users, user fields, user profile, user-profile, user profiles, user roles
+Tags: community, member, membership, user-profile, user-registration
 Requires at least: 4.1
-Tested up to: 4.6.1
-
-Stable Tag: 1.3.72
-
+Tested up to: 4.8
+Stable tag: 1.3.87
 License: GNU Version 2 or Any Later Version
+License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
 The easiest way to create powerful online communities and beautiful user profiles with WordPress
 
@@ -59,6 +58,7 @@ Ultimate Member has a range of extensions that allow you to extend the power of 
 * [myCRED](https://ultimatemember.com/extensions/mycred/) - With the myCRED extension you can integrate Ultimate Member with the popular myCRED points management plugin
 * [Notices](https://ultimatemember.com/extensions/notices/) - Alert users to important information using conditional notices
 * [Profile Completeness](https://ultimatemember.com/extensions/profile-completeness/) - Encourage or force users to complete their profiles with the profile completeness extension
+* [Friends](https://ultimatemember.com/extensions/friends/) - Allows users to become friends by sending & accepting/rejecting friend requests
 
 = Free Extensions =
 
@@ -148,6 +148,225 @@ The plugin works with popular caching plugins by automatically excluding Ultimat
 16. Screenshot 16
 
 == Changelog ==
+
+
+= 1.3.87: June 24, 2017 =
+
+* Bugfixes
+  - Fix system info
+
+= 1.3.86: June 19, 2017 =
+
+* Enhancements:
+  - Update readme.txt
+  
+
+= 1.3.85: June 19, 2017 =
+
+* Enhancements:
+  * Add new filter hook to modify the profile cancel uri for redirection
+    * `um_edit_profile_cancel_uri`
+  * Add new filter hook to modify the specific field type's value
+    * `um_edit_{$type}_field_value`
+  * Add new filter hook that modies the file name
+    * `um_upload_file_name`
+  * Update en_US translation files
+
+* Bugfixes:
+  * Fix file clean up with image/file fields on profile update
+  * Fix text domain slug for wp.org translation compatibility
+  * Fix change password email notification
+  * Fix double click submission in registration forms
+  * Fix custom field role validation
+  * Fix conditional logic 'content block' field
+  * Fix conditional logic field operators and visibility
+  * Fix textarea field sanitation
+  * Fix system info false positive virus scan results
+  * Fix field validation for minimum and maximum numeric values
+  * Fix used custom fields visibility in form builders
+  * Fix cache user's profile option description
+  * Fix double click for android device
+  * Fix png image upload with transparency
+  * Fix extra slashes in form edit view when invalid input fields occur
+  * Remove notices
+  
+  
+= 1.3.84: April 18, 2017 =
+
+* Enhancements:
+  * Adds new action hooks before and after WP_User_Query. 
+    * `um_user_before_query`
+    * `um_user_after_query`
+  * Adds a dismiss link in locale / language translation notices
+  * Adds correct user profile url in WPML language switcher
+  * Adds new option to disable name fields in account page
+    * `UM > Settings > Account > Disable First & Last Name fields`
+  * Add new filters to modify upload base directories
+    * `um_multisite_upload_sites_directory`
+    * `um_multisite_upload_directory`
+  * Adds new action hook in admin > user edit > Ultimate Member to append any customisation
+    * `um_user_profile_section`
+  * Adds H2 for UltimateMember section to Add/Edit User Form
+
+* Bugfixes
+  * Fix image url cache filter
+  * Fix PHP 7.1+ compatibility issues 
+  * Fix UTF8 encoding in form fields
+  * Fix hide member directory option.
+  * Fix conditional logic fields.
+  * Fix login access settings for logged-in users.
+  * Fix WP role synchronisation on UM role update
+  * Fix WP authenticate filter hook
+  * Fix radio and checbox field active state colors when disabled.
+  * Fix Content Availability conditional fields in edit/add category screens
+  * Remove notices
+
+= 1.3.83: February 20, 2017 =
+
+* Enhancements:
+   * Adds user avatar's alternate text.  The default text is set to `display_name`
+   * Adds new filter hook to modif the user avatar's alternate text. 
+       * `um_avatar_image_alternate_text`
+   * Set gravatar for newly registered users
+   * Adds Tag archive page access settings
+
+* Bugfixes
+   * Remove pointer cursor from field areas in profile view mode
+   * Fix profile slug in permalinks
+   * Fix URL field 'nofollow' issue
+   * Fix field icons display
+   * Fix an issue with admin roles in editing fields
+   * Fix whitepspace issue with Email Address validation
+   * Fix profile visibility option in member directories
+   * Fix icon display as label in profile view
+   * Fix PHP 7.1.1 compatibility
+   * Fix redirection on update profile slug
+   * Fix dynamic CSS options in member directory
+   * Fix edit profile option by specific role
+   * Fix Vkontakte view
+   * Remove notices
+
+= 1.3.82: January 31, 2017 =
+
+* Enhancements:
+   * Add filter hook to disable secure account fields
+      * `um_account_secure_fields__enabled`
+   * Updates ReduxFramework to version 3.6.2
+   * Adds a body class in profile/user page for the current loggedin user
+      * `um-own-profile`
+
+* Bugfixes
+   *  Fix select/multi-select field options translation
+   *  Fix profiles visibility and access permissions in member directories
+   *  Fix User deletion in mobile browsers
+   *  Fix WPML & PolyLang compatibility issues
+   *  Fix field view and edit restriction
+   *  Fix author name in recent comments widget
+   *  Fix overwrite of multiple image and file uploads with the same filename
+   *  Remove notices
+
+= 1.3.81: January 19, 2017 =
+
+* Bugfixes
+   * Fix conditional field option with 'contains'
+   * Fix WPML compatibility with UM logout
+
+= 1.3.80: January 18, 2017 =
+
+* Bugfixes:
+   * Fix loop email notifications on user creation in the back-end
+
+= 1.3.79: January 17, 2017 =
+
+* Enhancements:
+   * Adds new username and string validation filter hooks:
+      * um_validation_safe_username_regex
+      * um_validation_safe_string_regex
+   * Adds new filter hook to modify conditional fields
+      * um_get_field__{$field_key}
+   * Change max limit of users queue's count in cache
+   * Adds current logged in users WP and Community roles in the System Info
+   * Adds confirmation on user deletion
+
+* Bugfixes:
+   * Fix conditional fields
+   * Fix logout compatibility issues with WPML
+   * Fix select option's custom callback validation
+   * Fix translation strings of primary and secondary buttons on Login and Register forms.
+   * Fix gender filter and results
+   * Fix user deletion in account page for mobile browsers
+   * Fix form rows CSS options
+   * Fix default text autocomplete
+   * Remove notices
+
+= 1.3.78: December 08, 2016 =
+
+* Bugfixes:
+  * Fix menu settings compatibility issue with WP 4.7
+  * Fix mobile class on account delete tab heading
+  * Fixes an issue where tagline shows the current users to all members
+  * Fixes notice on updating WP List Table quick edit
+  * Remove notices
+
+  = 1.3.77: November 30, 2016 =
+
+* Bugfixes:
+  * Fix set and reset password validation.
+  * Remove notices
+
+= 1.3.76: November 30, 2016 =
+
+* Bugfixes:
+  * Fix invalid security notice in set password.
+
+= 1.3.75: November 29, 2016 =
+
+* Bugfixes:
+  * Fix 'Invalid user ID' on profile update
+ 
+= 1.3.74: November 29, 2016 =
+
+* Enhancements:
+  * Improves clear users cache. 
+  * Removes user id from redirect URL on registration process for pending review and email activation statuses.
+
+* Bugfixes:
+  * Fix assigning of role on registration process
+  * Fix change email address in edit mode.
+  * Fix change password validation.
+  * Removes notices when role field is present in the profile form.
+
+
+= 1.3.73: November 17, 2016 =
+
+* Enhancements:
+  * Adds a filter hook to modify the submitted details on registration process
+      * `um_before_save_filter_submitted`
+  * Adds a filter hook to disable canonical link in header
+      * `um_allow_canonical__filter`
+  * Adds a filter hook to modify the auto-generated email address on registration process
+      * `um_user_register_submitted__email`
+  * Adds filter hooks to modify locale, language file path and textdomain
+      * `um_language_textdomain`
+      * `um_language_locale`
+      * `um_language_file`
+  * Adds filter hook to modify the data of selected value:
+      * `um_is_selected_filter_data`
+  * Adds new select/multi-select options to retrieve options from a callback.
+      * In the form builder, edit or add a select/multi-select field and add your callback function in `Choices callback` field to get populated.
+  * Adds parent select field option to dynamically populate another select field.
+      * If `Choices Callback` option is set in the field settings,  the `Parent Option` triggers an Ajax request to populate the child options on `change` event.
+  * Updates `um.min.js` file.
+  * Updates `en_US` translation file.
+
+* Bugfixes:
+  *  Removes notices from WPCLI console.
+  *  Removes notices from edit profile mode
+  *  Removes autocomplete from search filter fields
+  *  Fix translation strings of search filters on a member directory
+  *  Fix email notifications not sending on registration process
+  *  Fix field selection with special characters on form submission
+  *  Fix assigning of role on register submission process
 
 = 1.3.72: October 10, 2016 =
 

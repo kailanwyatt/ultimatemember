@@ -1,6 +1,6 @@
 <?php
 
-class UM_ADDON_system_info {
+class UM_ADDON_install_info {
 
 	function __construct() {
 		
@@ -16,8 +16,8 @@ class UM_ADDON_system_info {
    function admin_menu() {
 		
 		global $ultimatemember;
-		$this->addon = $ultimatemember->addons['system_info'];
-		add_submenu_page('ultimatemember', "System Info","System Info", 'manage_options', 'um_system_info', array(&$this, 'content') );
+		$this->addon = $ultimatemember->addons['install_info'];
+		add_submenu_page('ultimatemember', "System Info","System Info", 'manage_options', 'um_install_info', array(&$this, 'content') );
 		
 	}
 
@@ -26,14 +26,14 @@ class UM_ADDON_system_info {
 
 		switch ( $hook ) {
 			
-			case 'download_system_info':
+			case 'download_install_info':
 				
 					nocache_headers();
 
 					header( "Content-type: text/plain" );
-					header( 'Content-Disposition: attachment; filename="ultimatemember-system-info.txt"' );
+					header( 'Content-Disposition: attachment; filename="ultimatemember-install-info.txt"' );
 
-					echo wp_strip_all_tags( $_POST['um-sysinfo'] );
+					echo wp_strip_all_tags( $_POST['um-install-info'] );
 					exit;
 
 			break;
@@ -67,7 +67,8 @@ class UM_ADDON_system_info {
 		
 		// Identify Hosting Provider
 		 	$host 		= um_get_host();
-
+           
+           um_fetch_user( get_current_user_id() );
 		?>
 		
 		<div class="wrap">
@@ -80,13 +81,13 @@ class UM_ADDON_system_info {
 				echo $this->content;
 			} else { ?>
 
-		<form action="<?php echo esc_url( admin_url( 'admin.php?page=um_system_info' ) ); ?>" method="post" dir="ltr">
-			<textarea style="width:100%; height:400px;" readonly="readonly" onclick="this.focus();this.select()" id="system-info-textarea" name="um-sysinfo" title="<?php _e( 'To copy the system info, click below then press Ctrl + C (PC) or Cmd + C (Mac).', 'edd' ); ?>">
-### Begin System Info ###
+		<form action="<?php echo esc_url( admin_url( 'admin.php?page=um_install_info' ) ); ?>" method="post" dir="ltr">
+			<textarea style="width:100%; height:400px;" readonly="readonly" onclick="this.focus();this.select()" id="install-info-textarea" name="um-install-info" title="<?php _e( 'To copy the Install info, click below then press Ctrl + C (PC) or Cmd + C (Mac).', 'edd' ); ?>">
+### Begin Install Info ###
 
 ## Please include this information when posting support requests ##
 
-<?php do_action( 'um_system_info_before' ); ?>
+<?php do_action( 'um_install_info_before' ); ?>
 
 --- Site Info ---
 
@@ -103,6 +104,12 @@ Host:						<?php echo $host . "\n"; ?>
 --- User Browser ---
 
 <?php echo $browser ; ?>
+
+---- Current User Details --
+
+<?php $user = wp_get_current_user(); ?>
+UM Role: <?php echo um_user('role'). "\n"; ?>
+WP Role: <?php echo $user->roles ? $user->roles[0] : false; echo  "\n"; ?>
 
 --- WordPress Configurations ---
 
@@ -163,7 +170,7 @@ Exclude CSS/JS on Home: 		<?php if( um_get_option( 'js_css_exlcude_home' ) == 1 
 
 --- UM Pages Configuration ---
 
-<?php do_action("um_system_info_before_page_config") ?>
+<?php do_action("um_install_info_before_page_config") ?>
 User:						<?php echo get_permalink( um_get_option('core_user') ) . "\n"; ?>
 Account:						<?php echo get_permalink( um_get_option('core_account') ) . "\n"; ?>
 Members:					<?php echo get_permalink( um_get_option('core_members') ) . "\n"; ?>
@@ -171,7 +178,7 @@ Register:						<?php echo get_permalink( um_get_option('core_register') ) . "\n"
 Login:						<?php echo get_permalink( um_get_option('core_login') ) . "\n"; ?>
 Logout:						<?php echo get_permalink( um_get_option('core_logout') ) . "\n"; ?>
 Password Reset:				<?php echo get_permalink( um_get_option('core_password-reset') ) . "\n"; ?>
-<?php do_action("um_system_info_after_page_config") ?>
+<?php do_action("um_install_info_after_page_config") ?>
 
 -- UM Users Configuration ---
 
@@ -299,7 +306,6 @@ Web Server Info:          			<?php echo $_SERVER['SERVER_SOFTWARE'] . "\n"; ?>
 
 --- PHP Configurations --
 
-PHP Safe Mode:            		<?php echo $this->value( ini_get( 'safe_mode' ), 'yesno', true ); ?>
 PHP Memory Limit:         		<?php echo ini_get( 'memory_limit' ) . "\n"; ?>
 PHP Upload Max Size:      		<?php echo ini_get( 'upload_max_filesize' ) . "\n"; ?>
 PHP Post Max Size:        		<?php echo ini_get( 'post_max_size' ) . "\n"; ?>
@@ -317,6 +323,8 @@ FSOCKOPEN:                			<?php echo ( function_exists( 'fsockopen' ) ) ? 'Yo
 cURL:                     				<?php echo ( function_exists( 'curl_init' ) ) ? 'Your server supports cURL.' : 'Your server does not support cURL.'; ?><?php echo "\n"; ?>
 SOAP Client:              			<?php echo ( class_exists( 'SoapClient' ) ) ? 'Your server has the SOAP Client enabled.' : 'Your server does not have the SOAP Client enabled.'; ?><?php echo "\n"; ?>
 SUHOSIN:                  			<?php echo ( extension_loaded( 'suhosin' ) ) ? 'Your server has SUHOSIN installed.' : 'Your server does not have SUHOSIN installed.'; ?><?php echo "\n"; ?>
+GD Library:                  			<?php echo ( extension_loaded( 'gd' ) && function_exists('gd_info') ) ? 'PHP GD library is installed on your web server.' : 'PHP GD library is NOT installed on your web server.'; ?><?php echo "\n"; ?>
+Mail:                  			        <?php echo ( function_exists('mail') ) ? 'PHP mail function exist on your web server.' : 'PHP mail function doesn\'t exist on your web server.'; ?><?php echo "\n"; ?>
 
 
 --- Session Configurations ---
@@ -368,16 +376,16 @@ foreach ( $plugins as $plugin_path ) {
 endif;
 ?>
 <?php 
-do_action( 'um_system_info_after' );
+do_action( 'um_install_info_after' );
 ?>
 
 
 
 
-### End System Info ###</textarea>
+### End Install Info ###</textarea>
 			<p class="submit">
-				<input type="hidden" name="um-addon-hook" value="download_system_info" />
-				<?php submit_button( 'Download System Info File', 'primary', 'download_system_info', false ); ?>
+				<input type="hidden" name="um-addon-hook" value="download_install_info" />
+				<?php submit_button( 'Download Install Info File', 'primary', 'download_install_info', false ); ?>
 			</p>
 		</form>		
 		
@@ -408,4 +416,4 @@ do_action( 'um_system_info_after' );
 
 }
 
-$UM_ADDON_system_info = new UM_ADDON_system_info();
+$UM_ADDON_install_info = new UM_ADDON_install_info();

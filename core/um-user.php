@@ -61,11 +61,12 @@ class UM_User {
 			
 			$um_user_role = get_user_meta($user->ID,'role',true);
 			?>
+			<h2><?php _e('Ultimate Member','ultimate-member') ?></h2>
 			<table class="form-table">
 				<tbody>
 					<tr>
 						<th>
-							<label for="um_role"><?php _e( 'Community Role', 'ultimatemember' ); ?></label>
+							<label for="um_role"><?php _e( 'Community Role', 'ultimate-member'); ?></label>
 						</th>
 						<td>
 							<select name="um_role" id="um_role">
@@ -73,12 +74,14 @@ class UM_User {
 							<option value="<?php echo $key; ?>" <?php selected( $um_user_role, $key ); ?> ><?php echo $value; ?></option>
 							<?php } ?>
 							</select>
-							<span class="description"><?php _e( 'Assign or change the community role for this user', 'ultimatemember' ); ?></span>
+							<span class="description"><?php _e( 'Assign or change the community role for this user', 'ultimate-member'); ?></span>
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		<?php }
+
+		do_action( 'um_user_profile_section' );
 	}
 
 	/**
@@ -234,23 +237,23 @@ class UM_User {
 			}
 
 			if ( $this->usermeta['account_status'][0] == 'approved' ) {
-				$this->usermeta['account_status_name'][0] = __('Approved','ultimatemember');
+				$this->usermeta['account_status_name'][0] = __('Approved','ultimate-member');
 			}
 
 			if ( $this->usermeta['account_status'][0] == 'awaiting_email_confirmation' ) {
-				$this->usermeta['account_status_name'][0] = __('Awaiting E-mail Confirmation','ultimatemember');
+				$this->usermeta['account_status_name'][0] = __('Awaiting E-mail Confirmation','ultimate-member');
 			}
 
 			if ( $this->usermeta['account_status'][0] == 'awaiting_admin_review' ) {
-				$this->usermeta['account_status_name'][0] = __('Pending Review','ultimatemember');
+				$this->usermeta['account_status_name'][0] = __('Pending Review','ultimate-member');
 			}
 
 			if ( $this->usermeta['account_status'][0] == 'rejected' ) {
-				$this->usermeta['account_status_name'][0] = __('Membership Rejected','ultimatemember');
+				$this->usermeta['account_status_name'][0] = __('Membership Rejected','ultimate-member');
 			}
 
 			if ( $this->usermeta['account_status'][0] == 'inactive' ) {
-				$this->usermeta['account_status_name'][0] = __('Membership Inactive','ultimatemember');
+				$this->usermeta['account_status_name'][0] = __('Membership Inactive','ultimate-member');
 			}
 
 			// add user meta
@@ -325,8 +328,15 @@ class UM_User {
 	 *
 	 */
 	function auto_login( $user_id, $rememberme = 0 ) {
-		wp_set_current_user($user_id);
-		wp_set_auth_cookie($user_id, $rememberme );
+		
+		wp_set_current_user( $user_id );
+		
+		wp_set_auth_cookie( $user_id, $rememberme );
+		
+		$user = get_user_by('ID', $user_id );
+		
+		do_action( 'wp_login', $user->user_login, $user );
+
 	}
 
 	/***
@@ -704,6 +714,34 @@ class UM_User {
 		return $role_title;
 	}
 
+	/**
+	 * Get role slug by ID
+	 * @param  integer $id 
+	 * @return string
+	 */
+	function get_role_slug_by_id( $id ) {
+		global $wpdb, $ultimatemember;
+
+
+		$args = array(
+		    	'posts_per_page' => 1,
+		    	'post_type' => 'um_role',
+		    	'page_id'	=> $id,
+		    	'post_status' => array('publish'),
+		);
+
+		$roles = new WP_Query( $args );
+		$role_slug = '';
+		
+		if ( $roles->have_posts() ) {
+			$role_slug = $roles->post->post_name;
+		}
+
+		wp_reset_query();  
+
+		return $role_slug;
+	}
+
 	/***
 	***	@Update one key in user meta
 	***/
@@ -763,14 +801,14 @@ class UM_User {
 	***	@Get admin actions for individual user
 	***/
 	function get_admin_actions() {
-		$items = '';
+		$items = array();
 		$actions = array();
 		$actions = apply_filters('um_admin_user_actions_hook', $actions );
 		if ( !isset( $actions ) || empty( $actions ) ) return false;
 		foreach($actions as $id => $arr ) {
 			$url = add_query_arg('um_action', $id );
 			$url = add_query_arg('uid', um_profile_id(), $url );
-			$items[] = '<a href="' . $url .'" class="real_url">' . $arr['label'] . '</a>';
+			$items[] = '<a href="' . $url .'" class="real_url '.$id.'-item">' . $arr['label'] . '</a>';
 		}
 		return $items;
 	}
@@ -803,7 +841,7 @@ class UM_User {
 	 */
 	function is_private_profile( $user_id ) {
 		$privacy = get_user_meta( $user_id, 'profile_privacy', true );
-		if ( $privacy == __('Only me','ultimatemember') ) {
+		if ( $privacy == __('Only me','ultimate-member') ) {
 			return true;
 		}
 		return false;
@@ -1069,6 +1107,24 @@ class UM_User {
 		}
 
 		return $user_id;
+	}
+
+	/**
+	 * Set gravatar hash id
+	 */
+	function set_gravatar( $user_id ){
+
+		um_fetch_user( $user_id );
+		$email_address = um_user('user_email');
+		$hash_email_address = '';
+
+		if( $email_address ){
+			$hash_email_address = md5( $email_address );
+			$this->profile['synced_gravatar_hashed_id'] = $hash_email_address;
+			$this->update_usermeta_info('synced_gravatar_hashed_id');
+		}
+
+		return $hash_email_address;
 	}
 
 }

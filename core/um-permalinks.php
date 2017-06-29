@@ -169,7 +169,7 @@ class UM_Permalinks {
 				um_fetch_user( $user_id );
 
 				if (  strtolower($_REQUEST['hash']) !== strtolower( um_user('account_secret_hash') )  )
-					wp_die( __( 'This activation link is expired or have already been used.','ultimatemember' ) );
+					wp_die( __( 'This activation link is expired or have already been used.','ultimate-member') );
 
 				$ultimatemember->user->approve();
 				$redirect = ( um_user('url_email_activate') ) ? um_user('url_email_activate') : um_get_core_page('login', 'account_active');
@@ -181,11 +181,11 @@ class UM_Permalinks {
 					$user_id = $user->ID;
 
 					// update wp user
-					wp_set_current_user( $user_id, $user_login );
+					wp_set_current_user( $user_id, $user->user_login );
 					wp_set_auth_cookie( $user_id );
 
 					ob_start();
-					do_action( 'wp_login', $user_login );
+					do_action( 'wp_login', $user->user_login, $user );
 					ob_end_clean();
 				}
 
@@ -254,6 +254,17 @@ class UM_Permalinks {
 		// Return existing profile slug
 		if( $generate_slug && $update_slug == false && $profile_slug  ){
 				return $this->profile_permalink( $profile_slug );
+		}
+
+		// Reset cache
+		if( $update_slug == true ){
+		
+			$user_id = um_user('ID');
+		
+			delete_option( "um_cache_userdata_{$user_id}" );
+		
+			um_fetch_user( $user_id );
+		
 		}
 	
 		// Username
@@ -379,6 +390,10 @@ class UM_Permalinks {
 			$permalink_base = um_get_option('permalink_base');
 
 			$user_in_url = '';
+
+			$full_name = str_replace("'", "", $full_name );
+			$full_name = str_replace("&", "", $full_name );
+			$full_name = str_replace("/", "", $full_name );
 
 			switch( $permalink_base )
 			{
